@@ -1,0 +1,5 @@
+{
+    "botToken": "ODA5NTk1MzA1MzAxMjQ2MDAy.YCXYYg.sTif6stro0ispIb3iQ4jdEe8c-E",
+    "botPrefix": "RH!",
+    "defaultPerms": ["SEND_MESSAGES", "VIEW_CHANNEL"]
+}
