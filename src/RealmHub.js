@@ -2,6 +2,7 @@ const EventEmitter = require('events')
 const ConsoleManager = require('./utils/ConsoleManager')
 const CommandManager = require('./commands/CommandManager')
 const EventManager = require('./events/EventManager')
+const PluginManager = require('./plugins/PluginManager')
 const Discord = require('discord.js')
 const config = require('../config.json')
 
@@ -17,6 +18,7 @@ class RealmHub extends EventEmitter {
         this.console = new ConsoleManager()
         this.CommandManager = new CommandManager(this)
         this.EventManager = new EventManager(this)
+        this.PluginManager = new PluginManager(this)
     }
     async startBot() {
         this.client.login(this.token)
@@ -30,6 +32,9 @@ class RealmHub extends EventEmitter {
     }
     getEventManager() {
         return this.EventManager
+    }
+    getPluginManager() {
+        return this.PluginManager
     }
 }
 

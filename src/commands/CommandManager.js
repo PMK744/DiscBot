@@ -1,4 +1,5 @@
 const getFiles = require('../utils/getFiles')
+const Discord = require('discord.js')
 const EventEmitter = require('events')
 
 class CommandManager extends EventEmitter {
@@ -23,33 +24,37 @@ class CommandManager extends EventEmitter {
 
                 if (!availableCommands.includes(command)) return commandData.reply('Invaild Command!')
 
-                const cooldown = this.client.commands.get(command).options.commandCooldown
+                if (this.client.commands.get(command).options.classCommand) {
+                    const cooldown = this.client.commands.get(command).options.commandCooldown
 
-                const commandPerms = this.client.commands.get(command).options.userPerms
-                const userPermsCheck = commandPerms ? this.bot.defaultPerms.add(commandPerms) : this.client.defaultPerms
-
-                if (userPermsCheck) {
-                    const missing = commandData.channel.permissionsFor(commandData.member).missing(userPermsCheck)
-                    if (missing.length) {
-                        return commandData.reply(`You don't have permission to use this command!`)
+                    const commandPerms = this.client.commands.get(command).options.userPerms
+                    const userPermsCheck = commandPerms ? this.bot.defaultPerms.add(commandPerms) : this.client.defaultPerms
+    
+                    if (userPermsCheck) {
+                        const missing = commandData.channel.permissionsFor(commandData.member).missing(userPermsCheck)
+                        if (missing.length) {
+                            return commandData.reply(`You don't have permission to use this command!`)
+                        }
                     }
-                }
-
-                let cooldownString = `${commandData.guild.id}-${commandData.member.id}-${command}`
-                if (cooldown > 0 && recentlyRan.includes(cooldownString)) return commandData.reply(`Please wait...`)
-                recentlyRan.push(cooldownString)
-                if (cooldown > 0 ) {
-                    setTimeout(() => {
-                        recentlyRan = recentlyRan.filter((string) => {
-                            return string !== cooldownString
-                        })
-                    }, cooldown)
-                }
-
-                try {
-                    return this.client.commands.get(command).execute(args, commandData)
-                } catch (err) {
-                    return this.console.error(err)
+    
+                    let cooldownString = `${commandData.guild.id}-${commandData.member.id}-${command}`
+                    if (cooldown > 0 && recentlyRan.includes(cooldownString)) return commandData.reply(`Please wait...`)
+                    recentlyRan.push(cooldownString)
+                    if (cooldown > 0 ) {
+                        setTimeout(() => {
+                            recentlyRan = recentlyRan.filter((string) => {
+                                return string !== cooldownString
+                            })
+                        }, cooldown)
+                    }
+    
+                    try {
+                        return this.client.commands.get(command).execute(args, commandData)
+                    } catch (err) {
+                        return this.console.error(err)
+                    }
+                } else {
+                    this.emit(command, data)
                 }
             })
         })
@@ -71,6 +76,25 @@ class CommandManager extends EventEmitter {
             this.client.commands.set(newCommand.options.commandUsage, newCommand)
             this.emit('ClassCommandRegistered', newCommand)
         })
+    }
+    async registerCommand(command) {
+        const newCommand = {
+            options: {
+                commandName: command.options.commandName,
+                commandUsage: command.options.commandUsage,
+                commandDescription: command.options.commandDescription,
+                commandCooldown: command.options.commandCooldown,
+                userPerms: new Discord.Permissions(command.options.userPerms).freeze() || this.bot.defaultPerms,
+            }
+        }
+        const cmdObject = {
+            'commandName': newCommand.options.commandName,
+            'commandUsage': newCommand.options.commandUsage,
+            'commandDescription': newCommand.options.commandDescription,
+        }
+        this.registeredCommands.push(cmdObject)
+        this.client.commands.set(newCommand.options.commandUsage, newCommand)
+        return this
     }
 }
 
