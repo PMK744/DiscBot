@@ -10,11 +10,8 @@ class PluginManager extends EventEmitter {
         this.client = this.bot.client
         this.console = this.bot.console
         this.registeredEvents = []
-        this.bot.on('BotStarted', () => {
-            this.loadPlugins()
-        })
     }
-    async loadPlugins() {
+    async onEnabled() {
 
         let folders = []
 
@@ -28,10 +25,13 @@ class PluginManager extends EventEmitter {
 
         folders.forEach(async (file) => {
             const files = (await getFiles(pluginPath + `\\${file}`)).join('-')
-            if (!files.includes('config.json') || !files.includes('index.js')) return this.bot.console.error('A plugin needs a config.json and a index.js files to operate!')
+            if (!files.includes('config.json')) return this.bot.console.error('[PluginManager] A plugin needs a config.json file to operate!')
 
             const PluginConfig = require(pluginPath + `\\${file}\\config.json`)
-            const PluginClass = require(pluginPath + `\\${file}\\index.js`)
+
+            if (PluginConfig.filePath == undefined) return this.bot.console.error(`[PluginManager] [${PluginConfig.name}] The config.json must include "filePath"!`)
+
+            const PluginClass = require(pluginPath + `\\${file}\\${PluginConfig.filePath}`)
             const newPlugin = new PluginClass(this.bot, PluginConfig)
             newPlugin.onEnabled()
         })

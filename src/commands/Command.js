@@ -10,6 +10,7 @@ class Command {
             commandDescription: options.commandDescription || "Default Description.",
             commandCooldown: options.commandCooldown * 1000 || -1 * 1000,
             userPerms: new Discord.Permissions(options.userPerms).freeze() || bot.defaultPerms,
+            consoleCommand: options.consoleCommand || false,
             classCommand: true,
         }
     }

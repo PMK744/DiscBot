@@ -1,4 +1,4 @@
-const discordBot = require('./src/RealmHub')
+const discordBot = require('./src/DiscBot')
 
 const bot = new discordBot()
 
@@ -6,4 +6,4 @@ bot.on('botStarted', data => {
     console.log(data)
 })
 
-bot.startBot('12345')
+bot.startBot()

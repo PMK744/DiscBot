@@ -20,9 +20,8 @@ class testplugin {
         this.bot.getCommandManager().on(command.options.commandUsage, data => {
             const command = data.command
             const args = data.args
-            const messageData = data.commandData
 
-            messageData.reply('Bean!')
+            console.log('bean')
 
         })
     }

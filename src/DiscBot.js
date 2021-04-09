@@ -6,7 +6,7 @@ const PluginManager = require('./plugins/PluginManager')
 const Discord = require('discord.js')
 const config = require('../config.json')
 
-class RealmHub extends EventEmitter {
+class DiscBot extends EventEmitter {
     constructor() {
         super()
         this.uptime
@@ -16,8 +16,8 @@ class RealmHub extends EventEmitter {
         this.client.commands = new Discord.Collection()
         this.defaultPerms = new Discord.Permissions(this.config.defaultPerms).freeze()
         this.console = new ConsoleManager()
-        this.CommandManager = new CommandManager(this)
         this.EventManager = new EventManager(this)
+        this.CommandManager = new CommandManager(this)
         this.PluginManager = new PluginManager(this)
     }
     async startBot() {
@@ -25,7 +25,16 @@ class RealmHub extends EventEmitter {
         this.client.on('ready', () => {
             this.console.info('Bot Started!')
             this.emit('BotStarted')
+            this.EventManager.onEnabled()
+            this.CommandManager.onEnabled()
+            this.PluginManager.onEnabled()
         })
+    }
+    getClient() {
+        return this.client
+    }
+    getConsole() {
+        return this.console
     }
     getCommandManager() {
         return this.CommandManager
@@ -38,4 +47,4 @@ class RealmHub extends EventEmitter {
     }
 }
 
-module.exports = RealmHub
+module.exports = DiscBot

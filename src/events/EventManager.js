@@ -8,11 +8,8 @@ class EventManager extends EventEmitter {
         this.client = this.bot.client
         this.console = this.bot.console
         this.registeredEvents = []
-        this.bot.on('BotStarted', () => {
-            this.loadEvents()
-        })
     }
-    async loadEvents() {
+    async onEnabled() {
         const events = await getFiles(__dirname + '/general')
         events.forEach(file => {
             const EventClass = require(file)
